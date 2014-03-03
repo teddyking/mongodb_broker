@@ -53,4 +53,32 @@ describe MongodbBroker do
       end
     end
   end
+
+  describe 'PUT /v2/service_instances/:id' do
+    let(:id) { '1234-abcd-12cd' }
+
+    context 'when Basic Auth is not provided' do
+      it 'returns an HTTP 401' do
+        get "/v2/service_instances/#{id}"
+        last_response.status.should eq 401
+      end
+    end
+
+    context 'when invalid Basic Auth is provided' do
+      it 'returns an HTTP 401' do
+        authorize 'badname', 'badpass'
+        get "/v2/service_instances/#{id}"
+        last_response.status.should eq 401
+      end
+    end
+
+    context 'when valid Basic Auth is provided' do
+      before(:each) { authorize 'admin', 'admin' }
+
+      it 'returns an HTTP 200' do
+        put "/v2/service_instances/#{id}"
+        last_response.status.should eq 200
+      end
+    end
+  end
 end

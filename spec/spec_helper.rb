@@ -1,6 +1,7 @@
 ENV['RACK_ENV'] = 'test'
 
 require_relative '../mongodb_broker'
+require_relative '../mongodb_service_helper'
 
 require 'json'
 require 'rack/test'
