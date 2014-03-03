@@ -26,15 +26,15 @@ describe MongodbServiceHelper do
       it 'returns true' do
         test_conn.should_receive(:database_names).and_return([])
 
-        mongo_srv_helper.database_exists?('x').should eq false
+        mongo_srv_helper.database_exists?('my_db').should eq false
       end
     end
 
     context "when the named database doesn't exist" do
       it 'returns false' do
-        test_conn.should_receive(:database_names).and_return(['x'])
+        test_conn.should_receive(:database_names).and_return(['my_db'])
 
-        mongo_srv_helper.database_exists?('x').should eq true
+        mongo_srv_helper.database_exists?('my_db').should eq true
       end
     end
   end

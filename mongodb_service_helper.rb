@@ -3,7 +3,7 @@ require 'mongo'
 class MongodbServiceHelper
   include Mongo
 
-  attr_reader :mongodb_uri
+  attr_reader :mongodb_uri, :client
 
   def initialize(mongodb_uri)
     @mongodb_uri = mongodb_uri
@@ -14,6 +14,6 @@ class MongodbServiceHelper
   end
 
   def database_exists?(name)
-    @client.database_names.include?(name)
+    client.database_names.include?(name)
   end
 end

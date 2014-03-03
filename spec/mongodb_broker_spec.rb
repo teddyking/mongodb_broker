@@ -56,6 +56,7 @@ describe MongodbBroker do
 
   describe 'PUT /v2/service_instances/:id' do
     let(:id) { '1234-abcd-12cd' }
+    let(:mongodb_srv_helper) { double("MongodbServiceHelper") }
 
     context 'when Basic Auth is not provided' do
       it 'returns an HTTP 401' do
@@ -73,11 +74,31 @@ describe MongodbBroker do
     end
 
     context 'when valid Basic Auth is provided' do
-      before(:each) { authorize 'admin', 'admin' }
+      before(:each) do
+        authorize 'admin', 'admin'
+        MongodbServiceHelper.should_receive(:new).
+          and_return(mongodb_srv_helper)
+        mongodb_srv_helper.should_receive(:establish_connection)
+      end
 
-      it 'returns an HTTP 200' do
-        put "/v2/service_instances/#{id}"
-        last_response.status.should eq 200
+      context "when the database resource doesn't already exist" do
+        it 'returns a 201' do
+          mongodb_srv_helper.should_receive(:database_exists?).with(id).
+            and_return(false)
+
+          put "/v2/service_instances/#{id}"
+          last_response.status.should eq 201
+        end
+      end
+
+      context "when the database resouce already exists" do
+        it 'returns a 409' do
+          mongodb_srv_helper.should_receive(:database_exists?).with(id).
+            and_return(true)
+
+          put "/v2/service_instances/#{id}"
+          last_response.status.should eq 409
+        end
       end
     end
   end

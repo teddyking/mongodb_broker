@@ -1,5 +1,6 @@
 require 'json'
 require 'sinatra/base'
+require_relative './mongodb_service_helper'
 
 class MongodbBroker < Sinatra::Base
   before do
@@ -11,15 +12,31 @@ class MongodbBroker < Sinatra::Base
     username == credentials[:username] and password == credentials[:password]
   end
 
+  # Catalog management
   get '/v2/catalog' do
     catalog.to_json
+  end
+
+  # Provisioning
+  # Note: A new DB isn't actually provisioned here as that's not really
+  # possible in MongoDB. This method just checks that there isn't a 
+  # conflicting resource.
+  put '/v2/service_instances/:id' do |id|
+    if mongodb_service.database_exists?(id)
+      status 409
+      {:description => 'Database already exists'}.to_json
+    else
+      status 201
+      {:dashboard_url => ''}.to_json
+    end
   end
 
   private
 
   def self.app_settings
     {
-      basic_auth: { username: 'admin', password: 'admin' }
+      basic_auth: { username: 'admin', password: 'admin' },
+      mongodb_service: { host: 'localhost', port: 27017 }
     }
   end
 
@@ -37,5 +54,13 @@ class MongodbBroker < Sinatra::Base
         ]
       ]
     }
+  end
+
+  def mongodb_service
+    credentials = self.class.app_settings[:mongodb_service]
+    uri = "mongodb://#{credentials[:host]}:#{credentials[:port]}"
+    mongo_srv_helper = MongodbServiceHelper.new(uri)
+    mongo_srv_helper.establish_connection
+    mongo_srv_helper
   end
 end
