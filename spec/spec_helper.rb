@@ -2,6 +2,7 @@ ENV['RACK_ENV'] = 'test'
 
 require_relative '../mongodb_broker'
 
+require 'json'
 require 'rack/test'
 require 'rspec'
 
