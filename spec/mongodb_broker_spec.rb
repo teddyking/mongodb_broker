@@ -1,6 +1,6 @@
 require_relative './spec_helper'
 
-# Some of these need DRYing up, especially the basic auth checks
+# Some of this needs DRYing up, especially the basic auth checks
 describe MongodbBroker do
   describe 'GET /v2/catalog' do
     let(:make_request) { get '/v2/catalog' }
@@ -236,6 +236,61 @@ describe MongodbBroker do
         it 'returns an HTTP 410' do
           mongodb_srv_helper.should_receive(:user_exists?)
             .with(instance_id, binding_id).and_return(false)
+
+          make_request
+          last_response.status.should eq 410
+        end
+      end
+    end
+  end
+
+  describe 'DELETE /v2/service_instances/:id' do
+    let(:make_request) { delete "/v2/service_instances/#{instance_id}" }
+
+    context 'when Basic Auth is not provided' do
+      it 'returns an HTTP 401' do
+        make_request
+        last_response.status.should eq 401
+      end
+    end
+
+    context 'when invalid Basic Auth is provided' do
+      it 'returns an HTTP 401' do
+        authorize 'badname', 'badpass'
+        make_request
+        last_response.status.should eq 401
+      end
+    end
+
+    context 'when valid Basic Auth is provided' do
+      before(:each) do
+        authorize 'admin', 'admin'
+        mock_mongodb_service_helper
+      end
+
+      context 'when the database resource already exists' do
+        before(:each) do
+          mongodb_srv_helper.should_receive(:database_exists?)
+            .with(instance_id).and_return(true)
+          mongodb_srv_helper.should_receive(:delete_database)
+            .with(instance_id)
+        end
+
+        it 'returns an HTTP 200' do
+          make_request
+          last_response.status.should eq 200
+        end
+
+        it 'returns {} in the body' do
+          make_request
+          last_response.body.should eq '{}'
+        end
+      end
+
+      context "when the database resource doesn't already exist" do
+        it 'returns an HTTP 410' do
+          mongodb_srv_helper.should_receive(:database_exists?)
+            .with(instance_id).and_return(false)
 
           make_request
           last_response.status.should eq 410

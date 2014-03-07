@@ -68,6 +68,19 @@ class MongodbBroker < Sinatra::Base
     end
   end
 
+  # Unprovisioning
+  delete '/v2/service_instances/:id' do |id|
+    if mongodb_service.database_exists?(id)
+      mongodb_service.delete_database(id)
+
+      status 200
+      {}.to_json
+    else
+      status 410
+      { description: "The database #{id} doesn't exist" }.to_json
+    end
+  end
+
   private
 
   def self.app_settings

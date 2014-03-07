@@ -45,6 +45,18 @@ describe MongodbServiceHelper do
     end
   end
 
+  describe '#delete_database' do
+    before(:each) do
+      mock_connect_to_mongo
+    end
+
+    it 'deletes a database' do
+      test_conn.should_receive(:drop_database).with('test')
+
+      mongo_srv_helper.delete_database('test')
+    end
+  end
+
   describe '#delete_user' do
     before(:each) do
       mock_connect_to_mongo
