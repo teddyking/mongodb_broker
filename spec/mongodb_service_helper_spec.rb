@@ -45,6 +45,19 @@ describe MongodbServiceHelper do
     end
   end
 
+  describe '#delete_user' do
+    before(:each) do
+      mock_connect_to_mongo
+    end
+
+    it 'deletes a user from a database' do
+      mock_select_database('test')
+      test_db.should_receive(:remove_user).with('test')
+
+      mongo_srv_helper.delete_user('test', 'test')
+    end
+  end
+
   describe '#user_exists?' do
     before(:each) do
       mock_connect_to_mongo

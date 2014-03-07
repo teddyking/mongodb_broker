@@ -17,6 +17,10 @@ class MongodbServiceHelper
     client.database_names.include?(name)
   end
 
+  def delete_user(database, username)
+    client[database].remove_user(username)
+  end
+
   def establish_connection
     @client = MongoClient.from_uri(mongodb_uri)
   end

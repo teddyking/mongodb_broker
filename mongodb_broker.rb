@@ -52,6 +52,22 @@ class MongodbBroker < Sinatra::Base
     end
   end
 
+  # Unbinding
+  delete '/v2/service_instances/:instance_id/service_bindings/:id' do
+    instance_id = params[:instance_id]  # database name
+    binding_id = params[:id]            # username
+
+    if mongodb_service.user_exists?(instance_id, binding_id)
+      mongodb_service.delete_user(instance_id, binding_id)
+
+      status 200
+      {}.to_json
+    else
+      status 410
+      { description: "The binding #{binding_id} doesn't exist" }.to_json
+    end
+  end
+
   private
 
   def self.app_settings
