@@ -9,7 +9,7 @@ class MongodbBroker < Sinatra::Base
 
   use Rack::Auth::Basic do |username, password|
     credentials = app_settings[:basic_auth]
-    username == credentials[:username] and password == credentials[:password]
+    username == credentials[:username] && password == credentials[:password]
   end
 
   # Catalog management
@@ -19,15 +19,36 @@ class MongodbBroker < Sinatra::Base
 
   # Provisioning
   # Note: A new DB isn't actually provisioned here as that's not really
-  # possible in MongoDB. This method just checks that there isn't a 
+  # possible in MongoDB. This method just checks that there isn't a
   # conflicting resource.
   put '/v2/service_instances/:id' do |id|
     if mongodb_service.database_exists?(id)
       status 409
-      {:description => 'Database already exists'}.to_json
+      { description: 'Database already exists' }.to_json
     else
       status 201
-      {:dashboard_url => ''}.to_json
+      { dashboard_url: '' }.to_json
+    end
+  end
+
+  # Binding
+  put '/v2/service_instances/:instance_id/service_bindings/:id' do
+    instance_id = params[:instance_id]  # database name
+    binding_id = params[:id]            # username
+
+    if mongodb_service.user_exists?(instance_id, binding_id)
+      status 409
+      { description: "The binding #{binding_id} already exists" }.to_json
+    else
+      mongodb_service.create_user(instance_id, binding_id, binding_password)
+      uri = "mongodb://#{binding_id}:#{binding_password}@#{mongodb_host}:#{mongodb_port}/#{instance_id}"
+      credentials = {
+        uri: uri, username: binding_id, password: binding_password,
+        host: mongodb_host, port: mongodb_port, database: instance_id
+      }
+
+      status 201
+      { 'credentials' => credentials }.to_json
     end
   end
 
@@ -36,8 +57,12 @@ class MongodbBroker < Sinatra::Base
   def self.app_settings
     {
       basic_auth: { username: 'admin', password: 'admin' },
-      mongodb_service: { host: 'localhost', port: 27017 }
+      mongodb_service: { host: 'localhost', port: 27_017 }
     }
+  end
+
+  def binding_password
+    'password'
   end
 
   def catalog
@@ -56,11 +81,22 @@ class MongodbBroker < Sinatra::Base
     }
   end
 
-  def mongodb_service
+  def mongodb_host
     credentials = self.class.app_settings[:mongodb_service]
-    uri = "mongodb://#{credentials[:host]}:#{credentials[:port]}"
-    mongo_srv_helper = MongodbServiceHelper.new(uri)
-    mongo_srv_helper.establish_connection
-    mongo_srv_helper
+    credentials[:host]
+  end
+
+  def mongodb_port
+    credentials = self.class.app_settings[:mongodb_service]
+    credentials[:port]
+  end
+
+  def mongodb_service
+    @mongodb_service ||= begin
+      uri = "mongodb://#{mongodb_host}:#{mongodb_port}"
+      mongo_srv_helper = MongodbServiceHelper.new(uri)
+      mongo_srv_helper.establish_connection
+      mongo_srv_helper
+    end
   end
 end
