@@ -93,29 +93,15 @@ class MongodbBroker < Sinatra::Base
   end
 
   def catalog
-    {
-      services: [
-        id: 'ae6c4cd4-90cd-40fc-a677-8d3b9a06f8e4',
-        name: 'mongodb',
-        description: 'MongoDB for everyone!',
-        bindable: true,
-        plans: [
-          id: '5d5d6cbd-ab1f-4f28-84e7-a994446ed910',
-          name: 'free',
-          description: 'free-tier MongoDB.'
-        ]
-      ]
-    }
+    self.class.app_settings[:catalog]
   end
 
   def mongodb_host
-    credentials = self.class.app_settings[:mongodb_service]
-    credentials[:host]
+    self.class.app_settings[:mongodb_service][:host]
   end
 
   def mongodb_port
-    credentials = self.class.app_settings[:mongodb_service]
-    credentials[:port]
+    self.class.app_settings[:mongodb_service][:port]
   end
 
   def mongodb_service
