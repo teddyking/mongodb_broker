@@ -1,0 +1,10 @@
+---
+# All keys must start with a :
+# TODO: make this not terrible
+
+:basic_auth:
+  :username: admin
+  :password: admin
+:mongodb_service:
+  :host: localhost
+  :port: 27017

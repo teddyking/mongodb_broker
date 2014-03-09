@@ -1,5 +1,6 @@
 require 'json'
 require 'sinatra/base'
+require 'yaml'
 require_relative './mongodb_service_helper'
 
 class MongodbBroker < Sinatra::Base
@@ -84,10 +85,7 @@ class MongodbBroker < Sinatra::Base
   private
 
   def self.app_settings
-    {
-      basic_auth: { username: 'admin', password: 'admin' },
-      mongodb_service: { host: 'localhost', port: 27_017 }
-    }
+    YAML.load(File.open('config/mongodb_broker.yml'))
   end
 
   def binding_password
