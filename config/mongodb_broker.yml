@@ -1,15 +1,19 @@
 ---
-# All keys must start with a :
-# TODO: make this not terrible
+# All keys must start with a ':'.
+# TODO: make this not terrible.
 
+# Credentials for the CC to auth with the Broker.
 :basic_auth:
   :username: admin
   :password: admin
 
+# The host/IP address and port of a (non-secure) MongoDB instance.
+# This is where the services will actually be provisioned.
 :mongodb_service:
   :host: localhost
   :port: 27017
 
+# Probably no need to change this.
 :catalog:
   :services:
   - :id: 'ae6c4cd4-90cd-40fc-a677-8d3b9a06f8e4'
