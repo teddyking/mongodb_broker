@@ -144,7 +144,7 @@ describe MongodbBroker do
           mongodb_srv_helper.should_receive(:user_exists?)
             .with(instance_id, binding_id).and_return(false)
           mongodb_srv_helper.should_receive(:create_user)
-            .with(instance_id, binding_id, 'password')
+            .with(instance_id, binding_id, valid_password)
         end
 
         it 'returns an HTTP 201' do
@@ -164,7 +164,7 @@ describe MongodbBroker do
 
           json = JSON.parse(last_response.body)
           uri = json['credentials']['uri']
-          uri.should eq "mongodb://#{binding_id}:password@localhost:27017/#{instance_id}"
+          uri.should match /mongodb:\/\/#{binding_id}:#{valid_password}@localhost:27017\/#{instance_id}/
         end
 
         it 'returns the individual credentials in the credentials Hash' do

@@ -36,4 +36,8 @@ module Helpers
       .and_return(mongodb_srv_helper)
     mongodb_srv_helper.should_receive(:establish_connection)
   end
+
+  def valid_password
+    /[a-zA-z0-9\-_=]+/
+  end
 end

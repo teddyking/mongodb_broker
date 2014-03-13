@@ -89,7 +89,7 @@ class MongodbBroker < Sinatra::Base
   end
 
   def binding_password
-    'password'
+    @binding_password ||= SecureRandom.urlsafe_base64
   end
 
   def catalog
