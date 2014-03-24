@@ -10,7 +10,7 @@ A Cloud Foundry v2.0 Service Broker for MongoDB. The broker is intended to be de
 # Setup and Deployment
 1. Clone this repository and cd into the repo directory.
 2. Run ```bundle install``` and ```bundle exec rspec -c``` to test.
-3. Edit the :basic_auth and :mongodb_service settings in config/mongodb_broker.yml file.
+3. Edit the basic_auth and mongodb_service settings in config/mongodb_broker.yml file.
 4. Deploy the app to Cloud Foundry using ```cf push <name>```.
 5. Register the broker (see [here](http://docs.cloudfoundry.org/services/managing-service-brokers.html#register-broker) for info).
 
