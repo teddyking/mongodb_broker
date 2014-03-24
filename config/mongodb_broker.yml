@@ -1,26 +1,24 @@
 ---
-# All keys must start with a ':'.
-# TODO: make this not terrible.
 
 # Credentials for the CC to auth with the Broker.
-:basic_auth:
-  :username: admin
-  :password: admin
+basic_auth:
+  username: admin
+  password: admin
 
 # The host/IP address and port of a (non-secure) MongoDB instance.
 # This is where the services will actually be provisioned.
-:mongodb_service:
-  :host: localhost
-  :port: 27017
+mongodb_service:
+  host: localhost
+  port: 27017
 
 # Probably no need to change this.
-:catalog:
-  :services:
-  - :id: 'ae6c4cd4-90cd-40fc-a677-8d3b9a06f8e4'
-    :name: 'mongodb'
-    :description: 'MongoDB for everyone!'
-    :bindable: true
-    :plans:
-    - :id: '5d5d6cbd-ab1f-4f28-84e7-a994446ed910'
-      :name: 'free'
-      :description: 'free-tier MongoDB.'
+catalog:
+  services:
+  - id: 'ae6c4cd4-90cd-40fc-a677-8d3b9a06f8e4'
+    name: 'mongodb'
+    description: 'MongoDB for everyone!'
+    bindable: true
+    plans:
+    - id: '5d5d6cbd-ab1f-4f28-84e7-a994446ed910'
+      name: 'free'
+      description: 'free-tier MongoDB.'
