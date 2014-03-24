@@ -13,6 +13,7 @@ A Cloud Foundry v2.0 Service Broker for MongoDB. The broker is intended to be de
 3. Edit the basic_auth and mongodb_service settings in config/mongodb_broker.yml file.
 4. Deploy the app to Cloud Foundry using ```cf push <name>```.
 5. Register the broker (see [here](http://docs.cloudfoundry.org/services/managing-service-brokers.html#register-broker) for info).
+6. Make the service plan public (see [here](http://docs.cloudfoundry.org/services/access-control.html#make-plans-public)).
 
 # Binding and Example App
 You can grab the service credentials as follows:
